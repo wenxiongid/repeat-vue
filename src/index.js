@@ -7,11 +7,10 @@ let app = new Vue({
     n: 0
   },
   render(){
-    console.log(this.t1, this.t2, this.n)
+    console.log(this.t1, this.t2)
   }
 })
 
 app.t1 = 't1'
-setTimeout(() => {
-  app.t2 = 'my text'
-}, 1000)
+app.t2 = 'my text'
+app.n = 2

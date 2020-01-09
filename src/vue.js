@@ -1,17 +1,25 @@
+import Dep from './dep'
+import Watcher from './watcher'
+
 function observe(value, cb){
   Object.keys(value).forEach(key => defineReactive(value, key, value[key], cb))
 }
 
 function defineReactive(obj, key, val, cb){
+  const dep = new Dep()
+  
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: () => {
+      if(Dep.target){
+        dep.addSub(Dep.target)
+      }
       return val
     },
     set: newVal => {
       val = newVal
-      cb()
+      dep.notify()
     }
   })
 }
@@ -37,5 +45,8 @@ export default class Vue {
     this._data = options.data
     _proxy.call(this, options.data)
     observe(this._data, options.render.bind(this))
+    let watcher = new Watcher(this, null, options.render.bind(this))
   }
 }
+
+Dep.target = null
