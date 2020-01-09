@@ -1,17 +1,19 @@
 import Dep from './dep'
 import Watcher from './watcher'
 
-function observe(value, cb){
-  Object.keys(value).forEach(key => defineReactive(value, key, value[key], cb))
+function observe(value){
+  Object.keys(value).forEach(key => defineReactive(value, key, value[key]))
 }
 
-function defineReactive(obj, key, val, cb){
+function defineReactive(obj, key, val){
+  // 对应data每一个key创建一个依赖列表
   const dep = new Dep()
   
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: () => {
+      // 每调用一次取值，取值的对象有watcher的，增加一个依赖
       if(Dep.target){
         dep.addSub(Dep.target)
       }
@@ -19,6 +21,7 @@ function defineReactive(obj, key, val, cb){
     },
     set: newVal => {
       val = newVal
+      // 对每个依赖提醒
       dep.notify()
     }
   })
@@ -44,7 +47,7 @@ export default class Vue {
   constructor(options){
     this._data = options.data
     _proxy.call(this, options.data)
-    observe(this._data, options.render.bind(this))
+    observe(this._data)
     let watcher = new Watcher(this, null, options.render.bind(this))
   }
 }
