@@ -1,4 +1,7 @@
-import { noop } from "../utils"
+import {
+  noop,
+  isObject
+} from "../util"
 import {
   pushTarget,
   popTarget
@@ -12,7 +15,7 @@ export default class Watcher {
     if(isRenderWatcher){
       vm._watcher = this
     }
-    vm._watcher.push(this)
+    vm._watchers.push(this)
     if(options){
       this.deep = !!options.deep
       this.user = !!options.user

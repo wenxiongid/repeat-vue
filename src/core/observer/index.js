@@ -1,8 +1,9 @@
 import {
   hasOwn,
   def,
-  hasProto
-} from "../utils"
+  hasProto,
+  isObject
+} from "../util"
 import {
   arrayMethods
 } from './array'
@@ -60,6 +61,7 @@ export function observe(value, asRootData){
 function defineReactive(obj, key, val, customSetter, shallow){
   // 对应data每一个key创建一个发布者
   const dep = new Dep()
+  dep.key = key
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if(property && property.configurable === false){
@@ -88,10 +90,12 @@ function defineReactive(obj, key, val, customSetter, shallow){
           }
         }
       }
+      console.log('getValue', `${key}:`, value)
       return value
     },
     set: function reactiveSetter(newVal) {
       const value = getter ? getter.call(obj) : val
+      console.log(`${key}:`, value, '=>', newVal)
       // 值相等就不更新了
       if(newVal === value || (newVal !== newVal && value !== value)){
         return
@@ -104,6 +108,7 @@ function defineReactive(obj, key, val, customSetter, shallow){
       } else {
         val = newVal
       }
+      console.log(`${key}:`, value, '=>', newVal, 'done')
       childOb = !shallow && observe(newVal)
       // 对每个依赖提醒
       dep.notify()

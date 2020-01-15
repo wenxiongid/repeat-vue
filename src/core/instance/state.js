@@ -2,11 +2,13 @@ import {
   noop,
   isPlainObject,
   isReserved,
-  hasOwn
-} from './utils'
+  hasOwn,
+  nativeWatch
+} from '../util'
 import {
   observe
-} from './observer'
+} from '../observer'
+import { popTarget, pushTarget } from '../observer/dep'
 
 const sharedPropertyDefinition = {
   enumerable: true,
@@ -25,7 +27,23 @@ function proxy(target, sourceKey, key){
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
-function initData(vm){
+export function initState(vm){
+  vm._watchers = []
+  const opts = vm.$options
+  if(opts.props) initProps(vm, opts.props)
+  if(opts.methods) initMethods(vm, opts.methods)
+  if(opts.data){
+    initData(vm)
+  } else {
+    observe(vm._data = {}, true)
+  }
+  if(opts.computed) initComputed(vm, opts.computed)
+  if(opts.watch && opts.watch !== nativeWatch) {
+    initWatch(vm, opts.watch)
+  }
+}
+
+export function initData(vm){
   let data = vm.$options.data
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
@@ -41,7 +59,7 @@ function initData(vm){
   while(i--){
     if(props && hasOwn(props, keys[i])){
       // props中已有同名属性
-    } else if (!isReserved(key[i])){
+    } else if (!isReserved(keys[i])){
 
       // 从_data代理到vm
       proxy(vm, '_data', keys[i])
@@ -51,10 +69,13 @@ function initData(vm){
 }
 
 function getData(data, vm){
+  pushTarget()
   try{
     return data.call(vm)
   } catch(e) {
     console.error(e)
     return {}
+  } finally {
+    popTarget()
   }
 }

@@ -1,3 +1,8 @@
+import config from '../../config'
+import {
+  remove
+} from '../util'
+
 let uid = 0
 
 export default class Dep {
@@ -23,6 +28,7 @@ export default class Dep {
     if(process.env.NODE_ENV !== 'production' && !config.async){
       subs.sort((a, b) => a.id - b.id)
     }
+    console.log(this.key, 'dep notify', subs)
     for(let i = 0, l = subs.length; i < l; i++){
       subs[i].update()
     }
