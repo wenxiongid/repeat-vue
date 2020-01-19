@@ -6,9 +6,12 @@ import {
   nativeWatch
 } from '../util'
 import {
-  observe
+  observe,
+  set,
+  del
 } from '../observer'
 import { popTarget, pushTarget } from '../observer/dep'
+import Watcher from '../observer/watcher'
 
 const sharedPropertyDefinition = {
   enumerable: true,
@@ -77,5 +80,58 @@ function getData(data, vm){
     return {}
   } finally {
     popTarget()
+  }
+}
+
+function createWatcher(
+  vm,
+  expOrFn,
+  handler,
+  options
+){
+  if(isPlainObject(handler)){
+    options = handler
+    handler = handler.handler
+  }
+  if(typeof handler === 'string'){
+    handler = vm[handler]
+  }
+  return vm.$watch(expOrFn, handler, options)
+}
+
+export function stateMixin(Vue){
+  const dataDef = {}
+  dataDef.get = function(){ return this._data }
+  const propsDef = {}
+  propsDef.get = function(){ return this.props }
+
+  Object.defineProperty(Vue.prototype, '$data', defaDef)
+  Object.defineProperty(Vue.prototype, '$props', propsDef)
+
+  Vue.prototype.$set = set
+  Vue.prototype.$delete = del
+
+  Vue.prototype.$watch = function(
+    expOrFn,
+    cb,
+    options
+  ){
+    const vm = this
+    if(isPlainObject(cb)){
+      return createWatcher(vm, expOrFn, cb, options)
+    }
+    options = options || {}
+    options.user = true
+    const watcher = new Watcher(vm, expOrFn, cb, options)
+    if(options.immediate){
+      try {
+        cb.call(vm, watcher.value)
+      } catch(e){
+        console.error(e)
+      }
+    }
+    return function unwatchFn(){
+      watcher.teardown()
+    }
   }
 }
