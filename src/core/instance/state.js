@@ -105,7 +105,7 @@ export function stateMixin(Vue){
   const propsDef = {}
   propsDef.get = function(){ return this.props }
 
-  Object.defineProperty(Vue.prototype, '$data', defaDef)
+  Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 
   Vue.prototype.$set = set
