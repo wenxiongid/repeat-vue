@@ -3,14 +3,15 @@ import {
   isPlainObject,
   isReserved,
   hasOwn,
-  nativeWatch
+  nativeWatch,
+  isServerRendering
 } from '../util'
 import {
   observe,
   set,
   del
 } from '../observer'
-import { popTarget, pushTarget } from '../observer/dep'
+import Dep, { popTarget, pushTarget } from '../observer/dep'
 import Watcher from '../observer/watcher'
 
 const sharedPropertyDefinition = {
@@ -80,6 +81,74 @@ function getData(data, vm){
     return {}
   } finally {
     popTarget()
+  }
+}
+
+const computedWatcherOptions = { lazy: true }
+
+function initComputed(vm, computed){
+  const watchers = vm._computedWatchers = Object.create(null)
+  const isSSR = isServerRendering()
+
+  for(const key in computed){
+    const userDef = computed[key]
+    const getter = typeof userDef === 'function' ? userDef : userDef.getter
+
+    if(!isSSR){
+      watchers[key] = new Watcher(
+        vm,
+        getter || noop,
+        noop,
+        computedWatcherOptions
+      )
+    }
+
+    if(!key in vm){
+      defineComputed(vm, key, userDef)
+    }
+  }
+}
+
+export function defineComputed(
+  target,
+  key,
+  userDef
+){
+  const shouleCache = !isServerRendering()
+  if(!typeof userDef === 'function'){
+    sharedPropertyDefinition.get = shouleCache
+      ? createComputedGetter(key)
+      : createGetterInvoker(userDef)
+    sharedPropertyDefinition.set = noop
+  } else {
+    sharedPropertyDefinition.get = userDef.get
+      ? shouleCache && userDef.cache !== false
+        ? createComputedGetter(key)
+        : createGetterInvoker(userDef.get)
+      : noop
+    sharedPropertyDefinition.set = userDef.set || noop
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+
+function createComputedGetter(key){
+  return function computedGetter() {
+    const watcher = this._computedWatchers && this._computedWatchers[key]
+    if(watcher){
+      if(watcher.dirty){
+        watcher.evaluate()
+      }
+      if(Dep.target){
+        watcher.depend()
+      }
+      return watcher.value
+    }
+  }
+}
+
+function createGetterInvoker(fn){
+  return function computedGetter(){
+    return fn.call(this, this)
   }
 }
 
