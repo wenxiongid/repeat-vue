@@ -6,6 +6,12 @@ let app = new Vue({
     t2: 'text2',
     n: 0
   },
+  computed: {
+    t1t2: function(){
+      console.log(this.t1, this.t2)
+      return `${this.t1}, ${this.t2}`
+    }
+  },
   render(){
     console.log('start render')
     console.log('render:', this.t1, this.t2, this.n)
@@ -18,6 +24,7 @@ let app = new Vue({
 })
 
 app.t1 = 't01'
+window.app = app
 // app.t1 = 't11'
 // app.t2 = 't22'
 // setTimeout(() => {

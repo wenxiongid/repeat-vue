@@ -103,7 +103,7 @@ function initComputed(vm, computed){
       )
     }
 
-    if(!key in vm){
+    if(!(key in vm)){
       defineComputed(vm, key, userDef)
     }
   }
@@ -115,7 +115,7 @@ export function defineComputed(
   userDef
 ){
   const shouleCache = !isServerRendering()
-  if(!typeof userDef === 'function'){
+  if(typeof userDef === 'function'){
     sharedPropertyDefinition.get = shouleCache
       ? createComputedGetter(key)
       : createGetterInvoker(userDef)
