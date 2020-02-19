@@ -2,9 +2,9 @@ import {
   no,
   noop,
   identity
-} from './shared/utils'
+} from '../shared/utils'
 
-import { LIFECYCLE_HOOKS } from './shared/constants'
+import { LIFECYCLE_HOOKS } from '../shared/constants'
 
 export default ({
   /**

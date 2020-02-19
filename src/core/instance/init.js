@@ -11,7 +11,15 @@ export function initMixin(Vue){
     vm._uid = uid++
 
     vm._isVue = true
-    vm.$options = options
+    if(options && options._isComponent){
+      initInternalComponent(vm, options)
+    } else {
+      vm.$options = mergeOptions(
+        resolveConstructorOptions(vm.constructor),
+        options || {},
+        vm
+      )
+    }
     vm._self = vm
     initState(vm)
     if(vm.$options.el){
