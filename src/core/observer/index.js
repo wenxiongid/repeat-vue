@@ -14,6 +14,7 @@ const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
 class Observer {
   constructor(value){
     this.value = value
+    // 创建发布者
     this.dep = new Dep()
     this.vmCount = 0
 
@@ -58,7 +59,7 @@ export function observe(value, asRootData){
   return ob
 }
 
-function defineReactive(obj, key, val, customSetter, shallow){
+export function defineReactive(obj, key, val, customSetter, shallow){
   // 对应data每一个key创建一个发布者
   const dep = new Dep()
   dep.key = key
@@ -176,4 +177,8 @@ function dependArray(value){
       dependArray(e)
     }
   }
+}
+
+export const observerState = {
+  shouldConvert: true
 }

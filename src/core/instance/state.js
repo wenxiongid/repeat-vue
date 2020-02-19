@@ -4,12 +4,16 @@ import {
   isReserved,
   hasOwn,
   nativeWatch,
-  isServerRendering
+  isServerRendering,
+  validateProp,
+  bind
 } from '../util'
 import {
   observe,
   set,
-  del
+  del,
+  observerState,
+  defineReactive
 } from '../observer'
 import Dep, { popTarget, pushTarget } from '../observer/dep'
 import Watcher from '../observer/watcher'
@@ -44,6 +48,23 @@ export function initState(vm){
   if(opts.computed) initComputed(vm, opts.computed)
   if(opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch)
+  }
+}
+
+function initProps(vm, propsOptions) {
+  const propsData = vm.$options.propsData || {}
+  const props = vm._props = {}
+  const keys = vm.$options._propKeys = []
+  const isRoot = !vm.$parent
+
+  observerState.shouldConvert = isRoot
+  for(const key in propsOptions){
+    keys.push(key)
+    const value = validateProp(key, propsOptions, propsData, vm)
+    defineReactive(props, key, value)// 写入到props = vm._props
+  }
+  if(!(key in vm)){
+    proxy(vm, `_props`, key)
   }
 }
 
@@ -152,6 +173,42 @@ function createGetterInvoker(fn){
   }
 }
 
+/**
+ * 初始化methods
+ * @param {} vm 
+ * @param {*} methods 
+ */
+function initMethods(vm, methods){
+  for(const key in methods){
+    vm[key] = methods[key] == null ? noop : bind(methods[key], vm)
+  }
+}
+
+/**
+ * 初始化watch
+ * @param {*} vm 
+ * @param {*} watch 
+ */
+function initWatch(vm, watch){
+  for(const key in watch){
+    const handler = watch[key]
+    if(Array.isArray(handler)){
+      for(let i = 0; i < handler.length; i++){
+        createWatcher(vm, key, handler[i])
+      }
+    } else {
+      createWatcher(vm, key, handler)
+    }
+  }
+}
+
+/**
+ * 调用vm.$watch创建一个watcher
+ * @param {*} vm 
+ * @param {*} expOrFn 
+ * @param {*} handler 
+ * @param {*} options 
+ */
 function createWatcher(
   vm,
   expOrFn,

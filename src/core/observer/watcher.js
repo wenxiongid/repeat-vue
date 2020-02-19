@@ -81,6 +81,7 @@ export default class Watcher {
     }
   }
   cleanupDeps(){
+    // 更新依赖
     let i = this.deps.length
     while(i--){
       const dep = this.deps[i]
