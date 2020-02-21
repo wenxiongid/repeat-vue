@@ -2,7 +2,7 @@ import {
   no,
   noop,
   identity
-} from '../shared/utils'
+} from '../shared/util'
 
 import { LIFECYCLE_HOOKS } from '../shared/constants'
 

@@ -1,4 +1,4 @@
-import { hasOwn } from "../../shared/utils"
+import { hasOwn } from "../../shared/util"
 import { observerState, observe } from "../observer"
 
 export function validateProp(
