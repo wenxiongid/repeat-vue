@@ -1,7 +1,9 @@
 import {
   initState,
-  stateMixin
 } from './state'
+import {
+  mergeOptions
+} from '../util'
 
 let uid = 0
 
