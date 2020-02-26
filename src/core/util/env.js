@@ -39,3 +39,27 @@ export const isServerRendering = () => {
 }
 
 export const nativeWatch = ({}).watch
+
+export const nextTick = (function(){
+  const callbacks = []
+  let pending = false
+  let timerFunc
+
+  function nextTickHandler(){
+    pending = false
+    const copies = callbacks.slice(0)
+    callbacks.length = 0
+    for(let i = 0; i < copies.length; i++){
+      copies[i]()
+    }
+  }
+
+  if(typeof setImmediate !== 'undefined' && isNative(setImmediate)){
+    timerFunc = () => {
+      setImmediate(nextTickHandler)
+    }
+  } else if(typeof MessageChannel !== 'undefined' && (
+    isNative(MessageChannel) ||
+    MessageChannel.toString() === '[object MessageChannelConstructor]'
+  ))
+})

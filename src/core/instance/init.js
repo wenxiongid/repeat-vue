@@ -7,6 +7,9 @@ import {
 import {
   initState,
 } from './state'
+import {
+  mergeOptions
+} from '../util'
 
 let uid = 0
 
