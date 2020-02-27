@@ -1,5 +1,5 @@
 import config from '../config'
-import { camelize, isPlainObject, extend } from '../../shared/utils'
+import { camelize, isPlainObject, extend } from '../../shared/util'
 
 const strats = config.optionMergeStrategies
 
@@ -92,5 +92,20 @@ export function mergeOptions(
   }
   function mergeField(key){
     const strat = strats[key]
+  }
+}
+
+export function validateComponentName(name){
+  if (!new RegExp(`^[a-zA-Z][\\-\\.0-9_${unicodeRegExp.source}]*$`).test(name)) {
+    warn(
+      'Invalid component name: "' + name + '". Component names ' +
+      'should conform to valid custom element name in html5 specification.'
+    )
+  }
+  if (isBuiltInTag(name) || config.isReservedTag(name)) {
+    warn(
+      'Do not use built-in or reserved HTML elements as component ' +
+      'id: ' + name
+    )
   }
 }

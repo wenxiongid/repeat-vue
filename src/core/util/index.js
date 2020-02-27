@@ -1,5 +1,6 @@
-export * from '../../shared/utils'
+export * from '../../shared/util'
 export * from './lang'
 export * from './env'
 export * from './props'
 export * from './options'
+export * from './next-tick'
