@@ -1,4 +1,4 @@
-import Vue from './core'
+import Vue from './platforms/web/entry-runtime'
 
 let app = new Vue({
   data: {
@@ -12,15 +12,7 @@ let app = new Vue({
       return `${this.t1}, ${this.t2}`
     }
   },
-  render(){
-    console.log('start render')
-    console.log('render:', this.t1, this.t2, this.n)
-    return {
-      t1: this.t1,
-      t2: this.t2,
-      n: this.n
-    }
-  }
+  el: '#app'
 })
 
 app.t1 = 't01'

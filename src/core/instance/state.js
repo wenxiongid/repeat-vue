@@ -25,7 +25,7 @@ const sharedPropertyDefinition = {
   set: noop
 }
 
-function proxy(target, sourceKey, key){
+export function proxy(target, sourceKey, key){
   sharedPropertyDefinition.get = function proxyGetter(){
     return this[sourceKey][key]
   }

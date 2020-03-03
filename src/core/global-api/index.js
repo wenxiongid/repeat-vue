@@ -13,6 +13,8 @@ import {
 import { set, del } from "../observer"
 import { ASSET_TYPES } from "../../shared/constants"
 import { initMixin } from "../instance/init"
+import { initExtend } from "./extend"
+import { initAssetResisters } from "./assets"
 
 export function initGlobalAPI(Vue){
   const configDef = {}
@@ -39,4 +41,6 @@ export function initGlobalAPI(Vue){
 
   initUse(Vue)
   initMixin(Vue)
+  initExtend(Vue)
+  initAssetResisters(Vue)
 }
