@@ -1,4 +1,4 @@
-import Vue from './core/instance'
+import Vue from './core'
 
 let app = new Vue({
   data: {
